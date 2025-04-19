@@ -27,10 +27,10 @@ const DescriptionSection = () => {
           <div>
             {/* Left */}
             <Image
-              src="https://placehold.co/600x400"
+              src="/images/CVA/aeaespa.png"
               width={600}
               height={400}
-              alt="Placeholder CVA 1"
+              alt="Cleber Virtual Avatar ae aespa"
               className="rounded-lg mb-0.5"
             ></Image>
             Nhóm thần tượng ảo ae dựa trên nhóm thần tượng thật aespa
@@ -39,10 +39,10 @@ const DescriptionSection = () => {
           <div>
             {/* Right */}
             <Image
-              src="https://placehold.co/600x400"
+              src="/images/CVA/TocTienAI.png"
               width={600}
               height={400}
-              alt="Placeholder CVA 1"
+              alt="Cleber Virtual Avatar Toc Tien AI"
               className="rounded-lg mb-0.5"
             ></Image>
             Tóc Tiên AI dựa trên nữ ca sĩ Tóc Tiên
@@ -62,10 +62,10 @@ const DescriptionSection = () => {
           <div>
             {/* Left */}
             <Image
-              src="https://placehold.co/600x400"
+              src="/images/FVI/HatsuneMiku.png"
               width={600}
               height={400}
-              alt="Placeholder CVA 1"
+              alt="Virtual idol Hatsune Miku"
               className="rounded-lg mb-0.5"
             ></Image>
             Thần tượng ảo Hatsune Miku
@@ -74,10 +74,10 @@ const DescriptionSection = () => {
           <div>
             {/* Right */}
             <Image
-              src="https://placehold.co/600x400"
+              src="/images/FVI/LilMiquelaFVI.png"
               width={600}
               height={400}
-              alt="Placeholder CVA 1"
+              alt="Virtual idol Lil Miquela"
               className="rounded-lg mb-0.5"
             ></Image>
             Thần tượng ảo Lil Miquela.

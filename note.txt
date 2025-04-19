@@ -1,0 +1,3 @@
+Chia nhỏ component ra để
+if else để load lên từng component của cái step 
+Riêng open-ended load từng câu 
