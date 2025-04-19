@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getN8nWorkflowData } from "@/service/N8NService";
+import { getN8nWorkflowData, PostN8nWorkflowData } from "@/service/N8NService";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,11 +17,15 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SurveyQuestion } from "@/types/survey";
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 
 function DynamicSurveyForm() {
   const [surveyData, setSurveyData] = useState<SurveyQuestion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [currentOpenEndedIndex, setCurrentOpenEndedIndex] = useState(0);
 
@@ -46,12 +50,50 @@ function DynamicSurveyForm() {
       ...prev,
       [questionId]: value,
     }));
+    // Clear any submit errors when user makes changes
+    if (submitError) {
+      setSubmitError(null);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Survey responses:", responses);
-    // Send responses to backend here
+
+    // Validate responses if needed
+    const validateResponses = () => {
+      // Implement validation logic here if required
+      // For example, check if all required questions are answered
+      return true;
+    };
+
+    if (!validateResponses()) {
+      setSubmitError("Please answer all required questions.");
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Prepare the data for submission
+      const submissionData = {
+        responses: responses,
+        completedAt: new Date().toISOString(),
+      };
+
+      // Submit the data
+      await PostN8nWorkflowData(submissionData);
+
+      // Handle successful submission
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Error submitting survey:", err);
+      setSubmitError(
+        "There was an error submitting your responses. Please try again."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const organizeQuestionsByType = () => {
@@ -75,6 +117,32 @@ function DynamicSurveyForm() {
     return <div className="text-center py-8 text-red-500">{error}</div>;
 
   const questionsByType = organizeQuestionsByType();
+
+  // If the survey has been successfully submitted
+  if (submitted) {
+    return (
+      <div className="max-w-2xl mx-auto p-4 text-center">
+        <Card className="shadow-sm bg-[#FAF8F8] p-8">
+          <div className="flex flex-col items-center space-y-4">
+            <CheckCircle className="w-16 h-16 text-green-500" />
+            <CardTitle className="text-2xl">Thank You!</CardTitle>
+            <p className="text-gray-600">
+              Your survey has been successfully submitted.
+            </p>
+            <Button
+              onClick={() => {
+                setResponses({});
+                setSubmitted(false);
+              }}
+              variant="outline"
+            >
+              Submit Another Response
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -209,6 +277,37 @@ function DynamicSurveyForm() {
           </SurveySection>
         )}
 
+        {/* Handle typo: "llikert" */}
+        {questionsByType["llikert"] && (
+          <SurveySection title="Additional Rating Questions">
+            {questionsByType["llikert"].map((q) => (
+              <div key={q.question_id} className="space-y-4 py-2">
+                <Label className="text-base font-medium">
+                  {q.question_text}
+                </Label>
+                <Select
+                  onValueChange={(val) =>
+                    handleResponseChange(q.question_id, val)
+                  }
+                  value={responses[q.question_id]}
+                >
+                  <SelectTrigger className="w-full sm:w-48">
+                    <SelectValue placeholder="Select a rating" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} -{" "}
+                        {num === 1 ? "Poor" : num === 5 ? "Excellent" : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </SurveySection>
+        )}
+
         {/* Open-Ended - Progressive Display */}
         {questionsByType["open-ended"] &&
           questionsByType["open-ended"].length > 0 && (
@@ -242,21 +341,36 @@ function DynamicSurveyForm() {
                       placeholder="Share your thoughts..."
                     />
 
-                    {responses[currentQuestion.question_id]?.trim() &&
-                      currentOpenEndedIndex < openEndedQuestions.length - 1 && (
-                        <Button
-                          type="button"
-                          onClick={handleNextOpenEndedQuestion}
-                          variant="outline"
-                          className="mt-2"
-                        >
-                          Next Question
-                        </Button>
-                      )}
+                    <div className="flex justify-between items-center mt-4">
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          setCurrentOpenEndedIndex((prev) =>
+                            Math.max(0, prev - 1)
+                          )
+                        }
+                        variant="outline"
+                        disabled={currentOpenEndedIndex === 0}
+                      >
+                        Previous Question
+                      </Button>
 
-                    <div className="text-sm text-gray-500 mt-2">
-                      Question {currentOpenEndedIndex + 1} of{" "}
-                      {openEndedQuestions.length}
+                      <div className="text-sm text-gray-500">
+                        Question {currentOpenEndedIndex + 1} of{" "}
+                        {openEndedQuestions.length}
+                      </div>
+
+                      <Button
+                        type="button"
+                        onClick={handleNextOpenEndedQuestion}
+                        variant="outline"
+                        disabled={
+                          currentOpenEndedIndex ===
+                          openEndedQuestions.length - 1
+                        }
+                      >
+                        Next Question
+                      </Button>
                     </div>
                   </div>
                 );
@@ -264,39 +378,27 @@ function DynamicSurveyForm() {
             </SurveySection>
           )}
 
-        {/* Handle typo: "llikert" */}
-        {questionsByType["llikert"] && (
-          <SurveySection title="Additional Rating Questions">
-            {questionsByType["llikert"].map((q) => (
-              <div key={q.question_id} className="space-y-4 py-2">
-                <Label className="text-base font-medium">
-                  {q.question_text}
-                </Label>
-                <Select
-                  onValueChange={(val) =>
-                    handleResponseChange(q.question_id, val)
-                  }
-                  value={responses[q.question_id]}
-                >
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Select a rating" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num} -{" "}
-                        {num === 1 ? "Poor" : num === 5 ? "Excellent" : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-          </SurveySection>
+        {/* Error message display */}
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
+            <AlertCircle className="h-5 w-5 mr-2" />
+            <span>{submitError}</span>
+          </div>
         )}
 
-        <Button type="submit" className="w-full py-6 text-lg font-medium mt-8">
-          Submit Survey
+        <Button
+          type="submit"
+          className="w-full py-6 text-lg font-medium mt-8"
+          disabled={submitting}
+        >
+          {submitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Submitting...
+            </>
+          ) : (
+            "Submit Survey"
+          )}
         </Button>
       </form>
     </div>

@@ -17,7 +17,7 @@ export const getN8nWorkflowData = async () => {
 export const PostN8nWorkflowData = async (data) => {
   try {
     const response = await axios.post(
-      "https://fsedegrayhnam.app.n8n.cloud/webhook/dynamic-survey",
+      "https://fsedegrayhnam.app.n8n.cloud/webhook-test/dynamic-survey",
       data
     );
     console.log("Data successfully submitted:", response.data);
