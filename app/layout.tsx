@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-white text-black relative box-border">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased m-5 bg-inherit max-lg:mx-0 max-lg:overflow-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased m-5 bg-inherit max-lg:mx-0 max-sm:overflow-hidden`}
       >
         <Blob
           className="absolute"
@@ -48,6 +48,11 @@ export default function RootLayout({
         <Blob
           className="absolute"
           style={{ bottom: "80%", left: "12px" }}
+        ></Blob>
+
+        <Blob
+          className="absolute"
+          style={{ bottom: "60%", left: "0px" }}
         ></Blob>
 
         {children}

@@ -21,8 +21,7 @@ import { Input } from "@/components/ui/input";
 const formSchema = z.object({
   phoneNumber: z
     .string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .max(15, { message: "Phone number cannot exceed 15 digits" })
+    .max(10, { message: "Phone number must be at 10 digits" })
     .regex(/^[0-9+\-\s()]+$/, { message: "Please enter a valid phone number" }),
 });
 
