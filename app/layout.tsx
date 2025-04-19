@@ -24,9 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="bg-white text-black relative box-border ">
+    <html lang="en" className="bg-white text-black relative box-border">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased m-5 bg-inherit`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased m-5 bg-inherit max-lg:mx-0 max-lg:overflow-hidden`}
       >
         <Blob
           className="absolute"
@@ -36,10 +36,28 @@ export default function RootLayout({
           className="absolute"
           style={{ top: "-400px", right: "0px" }}
         ></Blob>
+        <Blob
+          className="absolute"
+          style={{ top: "20%", right: "100px" }}
+        ></Blob>
+        <Blob className="absolute" style={{ top: "40%", right: "0px" }}></Blob>
+        <Blob
+          className="absolute"
+          style={{ bottom: "3200px", left: "0px" }}
+        ></Blob>
+        <Blob
+          className="absolute"
+          style={{ bottom: "80%", left: "12px" }}
+        ></Blob>
+
         {children}
         <Blob
           className="absolute"
-          style={{ bottom: "600px", left: "12px" }}
+          style={{ bottom: "1600px", left: "12px" }}
+        ></Blob>
+        <Blob
+          className="absolute"
+          style={{ bottom: "2600px", right: "0px" }}
         ></Blob>
         <Blob
           className="absolute"
