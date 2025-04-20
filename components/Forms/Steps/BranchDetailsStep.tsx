@@ -19,8 +19,12 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
 }) => {
   // Combine all relevant questions
   const allQuestions = [
-    ...(questionsByType["likert"] || []),
-    ...(questionsByType["multiple select question"] || []),
+    ...(questionsByType["likert"] || []).filter(
+      (q) => q.group === "branch_details"
+    ),
+    ...(questionsByType["multiple select question"] || []).filter(
+      (q) => q.group === "branch_details"
+    ),
   ];
 
   // Check if all are answered
