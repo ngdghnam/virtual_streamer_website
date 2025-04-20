@@ -6,17 +6,18 @@ import { Button } from "@/components/ui/button";
 import SurveySection from "@/components/Sections/SurveySection";
 import { DemographicStepProps } from "@/interfaces/iDemographicStepProps";
 
-
-
 const DemographicStep: React.FC<DemographicStepProps> = ({
   questionsByType,
   responses,
   handleResponseChange,
   onNextStep,
 }) => {
-  const singleChoiceQuestions = questionsByType["single-choice"] || [];
+  // Filter single-choice questions with group === "demographic"
+  const singleChoiceQuestions = (questionsByType["single-choice"] || []).filter(
+    (q) => q.group === "demographic"
+  );
 
-  // Kiểm tra đã trả lời hết chưa
+  // Check if all questions are answered
   const allAnswered = singleChoiceQuestions.every(
     (q) => responses[q.question_id]?.trim() !== ""
   );
@@ -31,7 +32,9 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
                 {q.question_text}
               </Label>
               <RadioGroup
-                onValueChange={(val) => handleResponseChange(q.question_id, val)}
+                onValueChange={(val) =>
+                  handleResponseChange(q.question_id, val)
+                }
                 value={responses[q.question_id] || ""}
                 className="mt-2 space-y-2"
               >
@@ -63,7 +66,7 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
               <Button
                 type="button"
                 onClick={onNextStep}
-                disabled={!allAnswered} 
+                disabled={!allAnswered}
               >
                 Next
               </Button>

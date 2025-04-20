@@ -18,5 +18,5 @@ export interface SurveySession {
   currentStep: string;
   responses: Record<string, string>;
   score?: number;
-  branch?: string
+  branch?: string;
 }

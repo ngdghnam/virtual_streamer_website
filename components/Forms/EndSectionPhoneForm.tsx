@@ -16,18 +16,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { addSheetData } from "@/lib/google-sheet.action";
 
 // Phone number validation schema
 const formSchema = z.object({
   phoneNumber: z
     .string()
-    .max(10, { message: "Phone number must be at 10 digits" })
+    .max(10, { message: "Phone number must be 10 digits" })
     .regex(/^[0-9+\-\s()]+$/, { message: "Please enter a valid phone number" }),
 });
 
 const EndSectionPhoneForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,37 +40,53 @@ const EndSectionPhoneForm = () => {
   });
 
   // Form submission handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
+    setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Format data for Google Sheets
+      // We'll include phone number and submission date
+      const formattedData = [[values.phoneNumber, new Date().toISOString()]];
+
+      // Call the server action to add data to Google Sheets
+      const result = await addSheetData(formattedData);
+
+      if (!result.success) {
+        throw new Error(result.error as string);
+      }
+
       console.log("Phone number submitted:", values.phoneNumber);
-      setIsSubmitting(false);
       setSubmitted(true);
 
-      // Optional: Reset form after submission
-      // form.reset()
-    }, 1000);
+      // Reset form after successful submission
+      form.reset();
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to submit. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className="rounded-lg max-w-md w-full mx-auto">
       <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
 
+      {error && (
+        <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
       {submitted ? (
-        <div className="text-center py-4">
-          <p className="text-green-600 mb-2">Thank you!</p>
-          <p>Your phone number has been submitted successfully.</p>
-          <Button
-            className="mt-4"
-            onClick={() => {
-              setSubmitted(false);
-              form.reset();
-            }}
-          >
-            Submit another number
-          </Button>
+        <div className="text-center py-4 bg-green-50 border border-green-400 text-green-700 px-4 rounded">
+          <p className="font-bold mb-2">Cảm ơn bạn!</p>
+          <p>Hãy chờ các phần quà hấp dẫn từ chúng mình nhé</p>
         </div>
       ) : (
         <Form {...form}>
@@ -81,7 +99,7 @@ const EndSectionPhoneForm = () => {
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="+1 (555) 123-4567"
+                      placeholder="(+84) 000 000 000"
                       {...field}
                       type="tel"
                     />

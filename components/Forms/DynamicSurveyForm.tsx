@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SurveyQuestion, SurveySession } from "@/types/survey";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
@@ -9,17 +9,13 @@ import { useSurveySession } from "@/hooks/useSurveySession";
 
 import DemographicStep from "./Steps/DemographicStep";
 import PreliminaryStep from "./Steps/PreliminaryStep";
+import ExtraPreliminaryStep from "./Steps/ExtraPreliminaryStep";
 import BranchDetailsStep from "./Steps/BranchDetailsStep";
 import OpenEndedQuestionStep from "./Steps/OpenEndedQuestionStep";
 
 function DynamicSurveyForm() {
-  const {
-    session,
-    questions,
-    updateSession,
-    isLoading,
-    error
-  } = useSurveySession();
+  const { session, questions, updateSession, isLoading, error } =
+    useSurveySession();
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -42,8 +38,8 @@ function DynamicSurveyForm() {
       ...localSession,
       responses: {
         ...(localSession.responses || {}),
-        [questionId]: value
-      }
+        [questionId]: value,
+      },
     };
 
     sessionStorage.setItem("surveySession", JSON.stringify(updatedSession));
@@ -52,17 +48,16 @@ function DynamicSurveyForm() {
 
   const handleNextStep = async () => {
     setSubmitError(null); // reset error nếu có
-  
+
     try {
       const updated = await updateSession();
 
-      setLocalSession(updated); 
+      setLocalSession(updated);
     } catch (err) {
       console.error("Failed to advance step:", err);
       setSubmitError("Failed to move to the next step. Try again.");
     }
   };
-  
 
   // Gửi kết quả khi submit
   const handleSubmit = async (e: React.FormEvent) => {
@@ -101,8 +96,14 @@ function DynamicSurveyForm() {
     }
   };
 
-  if (isLoading || !localSession) return <div className="text-center py-8">Loading survey...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">Error initializing survey</div>;
+  if (isLoading || !localSession)
+    return <div className="text-center py-8">Loading survey...</div>;
+  if (error)
+    return (
+      <div className="text-center py-8 text-red-500">
+        Error initializing survey
+      </div>
+    );
 
   if (submitted) {
     return (
@@ -129,7 +130,6 @@ function DynamicSurveyForm() {
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
           onNextStep={handleNextStep}
-
         />
 
         <PreliminaryStep
@@ -139,11 +139,16 @@ function DynamicSurveyForm() {
           onNextStep={handleNextStep}
         />
 
+        <ExtraPreliminaryStep
+          questionsByType={questionsByType}
+          responses={localSession.responses || {}}
+          handleResponseChange={handleResponseChange}
+        />
+
         <BranchDetailsStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
-
         />
 
         <OpenEndedQuestionStep
@@ -153,7 +158,6 @@ function DynamicSurveyForm() {
           currentOpenEndedIndex={currentOpenEndedIndex}
           setCurrentOpenEndedIndex={setCurrentOpenEndedIndex}
           handleNextOpenEndedQuestion={handleNextOpenEndedQuestion}
-
         />
 
         {submitError && (
@@ -181,20 +185,5 @@ function DynamicSurveyForm() {
     </div>
   );
 }
-
-const SurveySection = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => (
-  <Card className="mb-8 shadow-sm hover:shadow-md transition-shadow duration-300 bg-[#FAF8F8]">
-    <CardHeader className="border-b">
-      <CardTitle>{title}</CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-6 pt-6">{children}</CardContent>
-  </Card>
-);
 
 export default DynamicSurveyForm;

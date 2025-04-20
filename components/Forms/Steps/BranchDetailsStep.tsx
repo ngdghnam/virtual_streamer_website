@@ -7,6 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SurveySection from "@/components/Sections/SurveySection";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BranchDetailsStepProps } from "@/interfaces/iBranchDetailsStepProps";
 
@@ -14,8 +15,20 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
   questionsByType,
   responses,
   handleResponseChange,
-  
+  onNextStep,
 }) => {
+  // Combine all relevant questions
+  const allQuestions = [
+    ...(questionsByType["likert"] || []),
+    ...(questionsByType["multiple select question"] || []),
+  ];
+
+  // Check if all are answered
+  const areAllQuestionsAnswered = allQuestions.every((q) => {
+    const res = responses[q.question_id];
+    return res !== undefined && res !== null && res.trim() !== "";
+  });
+
   return (
     <>
       {/* Handle Likert scale questions */}
@@ -44,6 +57,19 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
               </Select>
             </div>
           ))}
+
+          {/* Next Button */}
+          {onNextStep && (
+            <div className="pt-4">
+              <Button
+                type="button"
+                onClick={onNextStep}
+                disabled={!areAllQuestionsAnswered}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </SurveySection>
       )}
     </>
