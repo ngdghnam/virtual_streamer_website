@@ -23,9 +23,13 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
     return null;
   }
 
-  const isAllQuestionsAnswered = extraPreliminaryQuestions.every(
-    (q) => responses[q.question_id] && responses[q.question_id].trim() !== ""
+
+  // Check if all questions are answered
+  const allAnswered = extraPreliminaryQuestions.every(
+    (q) => responses[q.question_id]?.trim() !== ""
   );
+
+  
 
   return (
     <SurveySection title="Extra Preliminary">
@@ -35,7 +39,7 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
             {q.question_text}
           </Label>
           <RadioGroup
-            onValueChange={(val) => handleResponseChange(q.question_id, val)}
+            onValueChange={(val) => handleResponseChange(q.question_id, val.toLowerCase())}
             value={responses[q.question_id] || ""}
             className="mt-2 space-y-2"
           >
@@ -61,17 +65,19 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
         </div>
       ))}
 
-      {isAllQuestionsAnswered && onNextStep && (
-        <div className="mt-6">
-          <Button
-            type="button"
-            onClick={onNextStep}
-            className="w-full py-6 text-lg font-medium"
-          >
-            Next
-          </Button>
-        </div>
-      )}
+      {onNextStep && (
+            <div className="pt-4">
+              <Button
+                type="button"
+                onClick={onNextStep}
+                disabled={!allAnswered}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+
+            
     </SurveySection>
   );
 };

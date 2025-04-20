@@ -17,11 +17,13 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
   handleResponseChange,
   onNextStep,
 }) => {
+  const branchQuestion = (questionsByType["likert"] || []).filter(
+    (q) => q.group === "branch_details"
+  );
   // Combine all relevant questions
   const allQuestions = [
-    ...(questionsByType["likert"] || []),
-    ...(questionsByType["multiple select question"] || []),
-  ];
+    ...(questionsByType["likert"] || [])
+    ]
 
   // Check if all are answered
   const areAllQuestionsAnswered = allQuestions.every((q) => {
@@ -32,9 +34,9 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
   return (
     <>
       {/* Handle Likert scale questions */}
-      {questionsByType["likert"] && (
+      {branchQuestion.length > 0 && (
         <SurveySection title="Branch Details">
-          {questionsByType["likert"].map((q) => (
+          {branchQuestion.map((q) => (
             <div key={q.question_id} className="space-y-4 py-2">
               <Label className="text-base font-medium">{q.question_text}</Label>
               <Select

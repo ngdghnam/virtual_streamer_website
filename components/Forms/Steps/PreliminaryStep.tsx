@@ -8,12 +8,6 @@ import SurveySection from "@/components/Sections/SurveySection";
 import { PreliminaryStepProps } from "@/interfaces/iPreliminaryStepProps";
 import { Button } from "@/components/ui/button";
 
-interface Question {
-  question_id: string;
-  question_text: string;
-  options?: string[];
-  group?: string;
-}
 
 // Constants for Likert scale
 const LIKERT_SCALE = [1, 2, 3, 4, 5] as const;
@@ -32,12 +26,34 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
     return `${questionId}-${encodeURIComponent(String(value))}`;
   };
 
+  // Filter only "preliminary" group questions
+  const preliminaryLikert = (questionsByType["likert"] || []).filter(
+    (q) => q.group === "preliminary"
+  );
+
+  const preliminaryMultiSelect = (
+    questionsByType["multiple select question"] || []
+  ).filter((q) => q.group === "preliminary");
+
+  const preliminarySingleChoice = (
+    questionsByType["single-choice"] || []
+  ).filter((q) => q.group === "preliminary");
+
   // Combine all relevant questions
   const allQuestions = [
-    ...(questionsByType["likert"] || []),
-    ...(questionsByType["multiple select question"] || []),
-    ...(questionsByType["single-choice"] || []),
+    ...preliminaryLikert,
+    ...preliminaryMultiSelect,
+    ...preliminarySingleChoice,
   ];
+
+  // Don't render anything if no questions exist
+  if (
+    preliminaryLikert.length === 0 &&
+    preliminaryMultiSelect.length === 0 &&
+    preliminarySingleChoice.length === 0
+  ) {
+    return null;
+  }
 
   // Check if all questions are answered
   const areAllQuestionsAnswered = allQuestions.every((q) => {
@@ -46,7 +62,7 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
   });
 
   const renderMultipleSelectQuestions = () =>
-    questionsByType["multiple select question"]?.map((q: Question) => (
+    preliminaryMultiSelect.map((q) => (
       <div key={q.question_id} className="space-y-4 py-2">
         <Label className="text-base font-medium">{q.question_text}</Label>
         <div className="space-y-2 mt-2">
@@ -82,7 +98,7 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
     ));
 
   const renderLikertQuestions = () =>
-    questionsByType["likert"]?.map((q: Question) => (
+    preliminaryLikert.map((q) => (
       <div key={q.question_id} className="space-y-4 py-2">
         <Label className="text-base font-medium">{q.question_text}</Label>
         <RadioGroup
@@ -114,7 +130,7 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
     ));
 
   const renderSingleChoiceQuestions = () =>
-    questionsByType["single-choice"]?.map((q: Question) => (
+    preliminarySingleChoice.map((q) => (
       <div key={q.question_id} className="space-y-4 py-2">
         <Label className="text-base font-medium">{q.question_text}</Label>
         <RadioGroup

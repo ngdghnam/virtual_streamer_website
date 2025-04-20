@@ -143,12 +143,15 @@ function DynamicSurveyForm() {
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
+
         />
 
         <BranchDetailsStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
         />
 
         <OpenEndedQuestionStep
