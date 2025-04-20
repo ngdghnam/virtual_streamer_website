@@ -6,9 +6,17 @@ export type SurveyQuestion = {
   branch: string;
   type: string;
   question_text: string;
-  options: string;
+  options: string[];
 };
 
 export type SurveyData = {
   data: SurveyQuestion[];
 };
+
+export interface SurveySession {
+  sessionId: string;
+  currentStep: string;
+  responses: Record<string, string>;
+  score?: number;
+  branch?: string
+}

@@ -1,15 +1,11 @@
-// components/DynamicSurveyForm.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { getN8nWorkflowData, PostN8nWorkflowData } from "@/service/N8NService";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { SurveyQuestion } from "@/types/survey";
+import { SurveyQuestion, SurveySession } from "@/types/survey";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
-import { useSurveyData } from "@/hooks/use-fetch";
+import { useSurveySession } from "@/hooks/useSurveySession";
 
 import DemographicStep from "./Steps/DemographicStep";
 import PreliminaryStep from "./Steps/PreliminaryStep";
@@ -17,79 +13,81 @@ import BranchDetailsStep from "./Steps/BranchDetailsStep";
 import OpenEndedQuestionStep from "./Steps/OpenEndedQuestionStep";
 
 function DynamicSurveyForm() {
-  // Use the custom hook instead of the direct state and useEffect
-  const { surveyData, loading, error } = useSurveyData();
+  const {
+    session,
+    questions,
+    updateSession,
+    isLoading,
+    error
+  } = useSurveySession();
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [responses, setResponses] = useState<Record<string, string>>({});
   const [currentOpenEndedIndex, setCurrentOpenEndedIndex] = useState(0);
+  const [localSession, setLocalSession] = useState<SurveySession | null>(null);
 
-  const handleResponseChange = (questionId: string, value: string) => {
-    setResponses((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
-    // Clear any submit errors when user makes changes
-    if (submitError) {
-      setSubmitError(null);
+  // Đồng bộ session từ hook vào local state
+  useEffect(() => {
+    if (session) {
+      setLocalSession(session);
     }
-  };
+  }, [session]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Cập nhật responses khi chọn đáp án
+  const handleResponseChange = (questionId: string, value: string) => {
+    if (!localSession) return;
 
-    // Validate responses if needed
-    const validateResponses = () => {
-      // Implement validation logic here if required
-      // For example, check if all required questions are answered
-      return true;
+    const updatedSession = {
+      ...localSession,
+      responses: {
+        ...(localSession.responses || {}),
+        [questionId]: value
+      }
     };
 
-    if (!validateResponses()) {
-      setSubmitError("Please answer all required questions.");
-      return;
-    }
+    sessionStorage.setItem("surveySession", JSON.stringify(updatedSession));
+    setLocalSession(updatedSession);
+  };
 
+  // Gửi kết quả khi submit
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      // Prepare the data for submission
-      const submissionData = {
-        responses: responses,
-        completedAt: new Date().toISOString(),
-      };
+      const sessionString = sessionStorage.getItem("surveySession");
 
-      // Submit the data
-      await postN8nWorkflowData(submissionData);
+      if (!sessionString) {
+        setSubmitError("Session data is missing.");
+        setSubmitting(false);
+        return;
+      }
 
-      // Handle successful submission
+      const parsedSession = JSON.parse(sessionString);
+      await updateSession(parsedSession);
+
       setSubmitted(true);
     } catch (err) {
-      console.error("Error submitting survey:", err);
-      setSubmitError(
-        "There was an error submitting your responses. Please try again."
-      );
+      console.error("Submit error:", err);
+      setSubmitError("Failed to submit survey. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const organizeQuestionsByType = () => {
-    return surveyData.reduce(
-      (
-        acc: { [x: string]: unknown[] },
-        question: { type: string | number }
-      ) => {
-        acc[question.type] = acc[question.type] || [];
-        acc[question.type].push(question);
-        return acc;
-      },
-      {} as Record<string, SurveyQuestion[]>
-    );
+  const organizeQuestionsByType = (questions: SurveyQuestion[] | null) => {
+    if (!questions) return {};
+    return questions.reduce((acc, question) => {
+      const type = question.type || "unclassified";
+      acc[type] = acc[type] || [];
+      acc[type].push(question);
+      return acc;
+    }, {} as Record<string, SurveyQuestion[]>);
   };
+
+  const questionsByType = organizeQuestionsByType(questions);
 
   const handleNextOpenEndedQuestion = () => {
     const openEndedQuestions = questionsByType["open-ended"] || [];
@@ -98,14 +96,9 @@ function DynamicSurveyForm() {
     }
   };
 
-  if (loading)
-    return <div className="text-center py-8">Loading survey questions...</div>;
-  if (error)
-    return <div className="text-center py-8 text-red-500">{error}</div>;
+  if (isLoading || !localSession) return <div className="text-center py-8">Loading survey...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error initializing survey</div>;
 
-  const questionsByType = organizeQuestionsByType();
-
-  // If the survey has been successfully submitted
   if (submitted) {
     return (
       <div className="max-w-2xl mx-auto p-4 text-center">
@@ -113,17 +106,9 @@ function DynamicSurveyForm() {
           <div className="flex flex-col items-center space-y-4">
             <CheckCircle className="w-16 h-16 text-green-500" />
             <CardTitle className="text-2xl">Thank You!</CardTitle>
-            <p className="text-gray-600">
-              Your survey has been successfully submitted.
-            </p>
-            <Button
-              onClick={() => {
-                setResponses({});
-                setSubmitted(false);
-              }}
-              variant="outline"
-            >
-              Submit Another Response
+            <p className="text-gray-600">Your responses have been submitted.</p>
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Start New Survey
             </Button>
           </div>
         </Card>
@@ -136,32 +121,31 @@ function DynamicSurveyForm() {
       <form onSubmit={handleSubmit} className="space-y-8">
         <DemographicStep
           questionsByType={questionsByType}
-          responses={responses}
+          responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
         />
 
         <PreliminaryStep
           questionsByType={questionsByType}
-          responses={responses}
+          responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
         />
 
         <BranchDetailsStep
           questionsByType={questionsByType}
-          responses={responses}
+          responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
         />
 
         <OpenEndedQuestionStep
           questionsByType={questionsByType}
-          responses={responses}
+          responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
           currentOpenEndedIndex={currentOpenEndedIndex}
           setCurrentOpenEndedIndex={setCurrentOpenEndedIndex}
           handleNextOpenEndedQuestion={handleNextOpenEndedQuestion}
         />
 
-        {/* Error message display */}
         {submitError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
             <AlertCircle className="h-5 w-5 mr-2" />
@@ -196,7 +180,7 @@ const SurveySection = ({
   children: React.ReactNode;
 }) => (
   <Card className="mb-8 shadow-sm hover:shadow-md transition-shadow duration-300 bg-[#FAF8F8]">
-    <CardHeader className="border-b ">
+    <CardHeader className="border-b">
       <CardTitle>{title}</CardTitle>
     </CardHeader>
     <CardContent className="space-y-6 pt-6">{children}</CardContent>
