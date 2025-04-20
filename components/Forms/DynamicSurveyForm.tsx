@@ -50,6 +50,20 @@ function DynamicSurveyForm() {
     setLocalSession(updatedSession);
   };
 
+  const handleNextStep = async () => {
+    setSubmitError(null); // reset error nếu có
+  
+    try {
+      const updated = await updateSession();
+
+      setLocalSession(updated); 
+    } catch (err) {
+      console.error("Failed to advance step:", err);
+      setSubmitError("Failed to move to the next step. Try again.");
+    }
+  };
+  
+
   // Gửi kết quả khi submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,16 +71,7 @@ function DynamicSurveyForm() {
     setSubmitError(null);
 
     try {
-      const sessionString = sessionStorage.getItem("surveySession");
-
-      if (!sessionString) {
-        setSubmitError("Session data is missing.");
-        setSubmitting(false);
-        return;
-      }
-
-      const parsedSession = JSON.parse(sessionString);
-      await updateSession(parsedSession);
+      await updateSession();
 
       setSubmitted(true);
     } catch (err) {
@@ -123,18 +128,22 @@ function DynamicSurveyForm() {
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
+
         />
 
         <PreliminaryStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
         />
 
         <BranchDetailsStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+
         />
 
         <OpenEndedQuestionStep
@@ -144,6 +153,7 @@ function DynamicSurveyForm() {
           currentOpenEndedIndex={currentOpenEndedIndex}
           setCurrentOpenEndedIndex={setCurrentOpenEndedIndex}
           handleNextOpenEndedQuestion={handleNextOpenEndedQuestion}
+
         />
 
         {submitError && (

@@ -14,13 +14,14 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
   questionsByType,
   responses,
   handleResponseChange,
+  
 }) => {
   return (
     <>
       {/* Handle Likert scale questions */}
-      {questionsByType["llikert"] && (
+      {questionsByType["likert"] && (
         <SurveySection title="Branch Details">
-          {questionsByType["llikert"].map((q) => (
+          {questionsByType["likert"].map((q) => (
             <div key={q.question_id} className="space-y-4 py-2">
               <Label className="text-base font-medium">{q.question_text}</Label>
               <Select

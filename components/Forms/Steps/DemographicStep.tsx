@@ -2,21 +2,24 @@
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Button } from "@/components/ui/button";
 import SurveySection from "@/components/Sections/SurveySection";
-import { SurveyQuestion } from "@/types/survey";
+import { DemographicStepProps } from "@/interfaces/iDemographicStepProps";
 
-interface DemographicStepProps {
-  questionsByType: Record<string, SurveyQuestion[]>;
-  responses: Record<string, string>;
-  handleResponseChange: (questionId: string, value: string) => void;
-}
+
 
 const DemographicStep: React.FC<DemographicStepProps> = ({
   questionsByType,
   responses,
   handleResponseChange,
+  onNextStep,
 }) => {
   const singleChoiceQuestions = questionsByType["single-choice"] || [];
+
+  // Kiểm tra đã trả lời hết chưa
+  const allAnswered = singleChoiceQuestions.every(
+    (q) => responses[q.question_id]?.trim() !== ""
+  );
 
   return (
     <>
@@ -54,6 +57,18 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
               </RadioGroup>
             </div>
           ))}
+
+          {onNextStep && (
+            <div className="pt-4">
+              <Button
+                type="button"
+                onClick={onNextStep}
+                disabled={!allAnswered} 
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </SurveySection>
       )}
     </>

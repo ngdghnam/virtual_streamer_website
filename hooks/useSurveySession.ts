@@ -39,31 +39,46 @@ export function useSurveySession() {
   }, []); // Chỉ chạy 1 lần khi mount
 
   // 2. Cập nhật session
-  const updateSession = async (updates: Partial<SurveySession>) => {
+  const updateSession = async () => {
     if (!session) throw new Error("Session chưa được khởi tạo");
-
+  
     try {
-      const updatedSession = sessionStorage.getItem("surveySession");
-
-      // Gửi PUT request với toàn bộ session
-      const response = await putN8nWorkflowData(updatedSession);
-
-      // Cập nhật từ server response
-      const serverUpdatedSession = response.session;
-
-      // Lưu vào sessionStorage
+      const raw = sessionStorage.getItem("surveySession");
+      if (!raw) throw new Error("Không tìm thấy dữ liệu session trong sessionStorage");
+  
+      let parsedSession;
+      try {
+        parsedSession = JSON.parse(raw);
+      } catch (parseErr) {
+        throw new Error("Dữ liệu session trong sessionStorage bị lỗi JSON");
+      }
+  
+      if (!parsedSession.sessionId) {
+        throw new Error("Session không hợp lệ: thiếu sessionId");
+      }
+  
+      // Gửi PUT request với session hợp lệ
+      const response = await putN8nWorkflowData(parsedSession);
+  
+      const serverUpdatedSession = response?.session;
+      if (!serverUpdatedSession || !serverUpdatedSession.sessionId) {
+        throw new Error("Phản hồi từ server không chứa session hợp lệ");
+      }
+  
+      // Lưu session mới vào sessionStorage
       sessionStorage.setItem("surveySession", JSON.stringify(serverUpdatedSession));
-      
+  
       // Cập nhật state
       setSession(serverUpdatedSession);
       setQuestions(response.questions || []);
-
+  
       return serverUpdatedSession;
     } catch (error) {
       console.error("Cập nhật session thất bại:", error);
       throw error;
     }
   };
+  
 
   return {
     session,

@@ -5,12 +5,26 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import SurveySection from "@/components/Sections/SurveySection";
 import { PreliminaryStepProps } from "@/interfaces/iPreliminaryStepProps";
+import { Button } from "@/components/ui/button";
 
 const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
   questionsByType,
   responses,
   handleResponseChange,
+  onNextStep,
 }) => {
+  // Combine all relevant questions
+  const allQuestions = [
+    ...(questionsByType["likert"] || []),
+    ...(questionsByType["multiple select question"] || [])
+  ];
+
+  // Check if all are answered
+  const areAllQuestionsAnswered = allQuestions.every((q) => {
+    const res = responses[q.question_id];
+    return res !== undefined && res !== null && res.trim() !== "";
+  });
+
   return (
     <SurveySection title="Preliminary">
       {/* Multiple Select Questions */}
@@ -19,10 +33,11 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
           <div key={q.question_id} className="space-y-4 py-2">
             <Label className="text-base font-medium">{q.question_text}</Label>
             <div className="space-y-2 mt-2">
-              {q.options.split(",").map((option: string) => {
+              {(q.options || []).map((option: string) => {
                 const trimmed = option.trim();
                 const id = `${q.question_id}-${trimmed}`;
                 const selected = responses[q.question_id]?.split(",") || [];
+
                 return (
                   <div
                     key={id}
@@ -84,6 +99,19 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
             </div>
           </div>
         ))}
+
+      {/* Next Button */}
+      {onNextStep && (
+        <div className="pt-4">
+          <Button
+            type="button"
+            onClick={onNextStep}
+            disabled={!areAllQuestionsAnswered}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </SurveySection>
   );
 };
