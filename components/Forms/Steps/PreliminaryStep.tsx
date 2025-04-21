@@ -123,8 +123,8 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
           })}
         </RadioGroup>
         <div className="flex justify-between text-sm text-gray-500 px-4 mt-1">
-          <span>Strongly Disagree</span>
-          <span>Strongly Agree</span>
+          <span>Hoàn toàn không đồng ý</span>
+          <span>Hoàn toàn đồng ý</span>
         </div>
       </div>
     ));

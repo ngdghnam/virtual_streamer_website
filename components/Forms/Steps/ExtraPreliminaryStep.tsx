@@ -39,11 +39,11 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
             {q.question_text}
           </Label>
           <RadioGroup
-            onValueChange={(val) => handleResponseChange(q.question_id, val.toLowerCase())}
+            onValueChange={(val) => handleResponseChange(q.question_id, val)}
             value={responses[q.question_id] || ""}
             className="mt-2 space-y-2"
           >
-            {["Yes", "No"].map((option) => {
+            {["yes", "no"].map((option) => {
               const id = `${q.question_id}-${option}`;
               return (
                 <div
@@ -55,7 +55,7 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
                     id={id}
                     className="border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500"
                   />
-                  <Label htmlFor={id} className="cursor-pointer">
+                  <Label htmlFor={id} className="cursor-pointer capitalize">
                     {option}
                   </Label>
                 </div>
