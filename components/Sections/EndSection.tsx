@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import EndSectionPhoneForm from "../Forms/EndSectionPhoneForm";
+// import EndSectionPhoneForm from "../Forms/EndSectionPhoneForm";
 import { useSurveyContext } from "@/contexts/SurveyContext";
+// import Link from "next/link";
 
 const EndSection: React.FC = () => {
   const { isSurveyCompleted } = useSurveyContext();
@@ -53,8 +54,20 @@ const EndSection: React.FC = () => {
           </li>
         </ul>
       </div>
-      <div className="mt-4">
-        <EndSectionPhoneForm />
+      <div className="mt-4 font-medium text-2xl flex flex-col">
+        <p className="text-xl font-normal">
+          Sau khi hoàn thành xong khảo sát, bạn hãy chụp lại màn hình và điền
+          vào Form dưới này nhé. Hãy giữ liên lạc để có cơ hội nhận các phần quà
+          hấp dẫn từ team chúng mình
+        </p>
+        <a
+          href="https://forms.gle/WPmhbaCj8bhaseaB8"
+          className="mx-auto"
+          target="_blank"
+        >
+          👉 Link ngay đây nè 👈
+        </a>
+        {/* <EndSectionPhoneForm /> */}
       </div>
     </div>
   );
