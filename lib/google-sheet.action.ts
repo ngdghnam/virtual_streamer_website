@@ -1,6 +1,6 @@
 "use server";
 import { google } from "googleapis";
-import "../envConfig.ts";
+// import "../envConfig.ts";
 
 export async function getSheetData() {
   try {
@@ -53,16 +53,6 @@ export async function getSheetData() {
 
 export async function addSheetData(values: string[][]) {
   try {
-    // Debug - check if CLIENT_EMAIL exists and its length
-    console.log("CLIENT_EMAIL exists:", !!process.env.CLIENT_EMAIL);
-    if (process.env.CLIENT_EMAIL) {
-      console.log("CLIENT_EMAIL length:", process.env.CLIENT_EMAIL.length);
-      console.log(
-        "First few chars:",
-        process.env.CLIENT_EMAIL.substring(0, 5) + "..."
-      );
-    }
-
     const glAuth = await google.auth.getClient({
       projectId: process.env.PROJECT_ID,
       credentials: {
