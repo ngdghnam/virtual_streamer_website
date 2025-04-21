@@ -121,21 +121,6 @@ const OpenEndedQuestionStep: React.FC<OpenEndedQuestionStepProps> = ({
         />
 
         <div className="flex justify-between items-center mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            disabled={currentOpenEndedIndex === 0 && !showFollowUp}
-            onClick={() => {
-              if (showFollowUp) {
-                setShowFollowUp(false);
-              } else {
-                setCurrentOpenEndedIndex((prev) => Math.max(0, prev - 1));
-              }
-            }}
-          >
-            Câu trước
-          </Button>
-
           <div className="text-sm text-gray-500">
             Câu {currentOpenEndedIndex + 1} / {openEndedQuestions.length}
             {showFollowUp && " (Follow-up)"}

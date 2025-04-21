@@ -23,13 +23,10 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
     return null;
   }
 
-
   // Check if all questions are answered
   const allAnswered = extraPreliminaryQuestions.every(
     (q) => responses[q.question_id]?.trim() !== ""
   );
-
-  
 
   return (
     <SurveySection title="Extra Preliminary">
@@ -66,18 +63,17 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
       ))}
 
       {onNextStep && (
-            <div className="pt-4">
-              <Button
-                type="button"
-                onClick={onNextStep}
-                disabled={!allAnswered}
-              >
-                Next
-              </Button>
-            </div>
-          )}
-
-            
+        <div className="pt-4">
+          <Button
+            type="button"
+            onClick={onNextStep}
+            disabled={!allAnswered}
+            className="cursor-progress"
+          >
+            Tiếp tục
+          </Button>
+        </div>
+      )}
     </SurveySection>
   );
 };

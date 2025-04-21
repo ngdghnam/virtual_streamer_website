@@ -65,10 +65,11 @@ const BranchDetailsStep: React.FC<BranchDetailsStepProps> = ({
         <div className="pt-4">
           <Button
             type="button"
+            className="cursor-pointer"
             onClick={onNextStep}
             disabled={!areAllQuestionsAnswered}
           >
-            Next
+            Tiếp tục
           </Button>
         </div>
       )}

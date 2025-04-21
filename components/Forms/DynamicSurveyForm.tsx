@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { useSurveySession } from "@/hooks/useSurveySession";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { useSurveyContext } from "@/contexts/SurveyContext";
 
 import DemographicStep from "./Steps/DemographicStep";
 import PreliminaryStep from "./Steps/PreliminaryStep";
@@ -13,18 +14,26 @@ import OpenEndedQuestionStep from "./Steps/OpenEndedQuestionStep";
 
 import { SurveyQuestion, SurveySession } from "@/types/survey";
 
-function DynamicSurveyForm() {
+const DynamicSurveyForm: React.FC = () => {
   const { session, questions, updateSession, isLoading, error } =
     useSurveySession();
+  const { setIsSurveyCompleted } = useSurveyContext();
 
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [currentOpenEndedIndex, setCurrentOpenEndedIndex] = useState(0);
+  const [currentOpenEndedIndex, setCurrentOpenEndedIndex] = useState<number>(0);
   const [localSession, setLocalSession] = useState<SurveySession | null>(null);
 
   useEffect(() => {
     if (session) setLocalSession(session);
   }, [session]);
+
+  useEffect(() => {
+    // Update the global survey completion status when the survey is submitted
+    if (submitted) {
+      setIsSurveyCompleted(true);
+    }
+  }, [submitted, setIsSurveyCompleted]);
 
   const handleResponseChange = (questionId: string, value: string) => {
     if (!localSession) return;
@@ -53,7 +62,6 @@ function DynamicSurveyForm() {
     }
   };
 
-
   const organizeQuestionsByType = (questions: SurveyQuestion[] | null) => {
     if (!questions) return {};
     return questions.reduce((acc, question) => {
@@ -81,14 +89,10 @@ function DynamicSurveyForm() {
         <Card className="shadow-sm bg-[#FAF8F8] p-8">
           <div className="flex flex-col items-center space-y-4">
             <CheckCircle className="w-16 h-16 text-green-500" />
-            <CardTitle className="text-2xl">Thank You!</CardTitle>
-            <p className="text-gray-600">Your responses have been submitted.</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 border rounded-md hover:bg-gray-100"
-            >
-              Start New Survey
-            </button>
+            <CardTitle className="text-2xl">Cảm ơn bạn!</CardTitle>
+            <p className="text-gray-600">
+              Câu trả lời của bạn đã được ghi nhận
+            </p>
           </div>
         </Card>
       </div>
@@ -132,11 +136,11 @@ function DynamicSurveyForm() {
           handleResponseChange={handleResponseChange}
           currentOpenEndedIndex={currentOpenEndedIndex}
           setCurrentOpenEndedIndex={setCurrentOpenEndedIndex}
-          onSurveySubmit={() => setSubmitted(true)} 
+          onSurveySubmit={() => setSubmitted(true)}
           handleNextOpenEndedQuestion={function (): void {
             throw new Error("Function not implemented.");
-          } }        />
-
+          }}
+        />
 
         {submitError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
@@ -147,6 +151,6 @@ function DynamicSurveyForm() {
       </form>
     </div>
   );
-}
+};
 
 export default DynamicSurveyForm;

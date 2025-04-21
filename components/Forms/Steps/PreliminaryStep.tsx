@@ -8,7 +8,6 @@ import SurveySection from "@/components/Sections/SurveySection";
 import { PreliminaryStepProps } from "@/interfaces/iPreliminaryStepProps";
 import { Button } from "@/components/ui/button";
 
-
 // Constants for Likert scale
 const LIKERT_SCALE = [1, 2, 3, 4, 5] as const;
 
@@ -174,8 +173,9 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
             type="button"
             onClick={onNextStep}
             disabled={!areAllQuestionsAnswered}
+            className="cursor-pointer"
           >
-            Next
+            Tiếp tục
           </Button>
         </div>
       )}

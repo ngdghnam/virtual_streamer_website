@@ -67,8 +67,9 @@ const DemographicStep: React.FC<DemographicStepProps> = ({
                 type="button"
                 onClick={onNextStep}
                 disabled={!allAnswered}
+                className="cursor-pointer"
               >
-                Next
+                Tiếp tục
               </Button>
             </div>
           )}

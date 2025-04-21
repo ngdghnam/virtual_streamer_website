@@ -2,14 +2,17 @@ import Navbar from "@/components/Navbar";
 import DescriptionSection from "@/components/Sections/DescriptionSection";
 import DynamicSurveySection from "@/components/Sections/DynamicSurveySection";
 import EndSection from "@/components/Sections/EndSection";
+import { SurveyProvider } from "@/contexts/SurveyContext";
 
-export default async function Home() {
+export default function Home() {
   return (
-    <div className="relative z-50 flex flex-col px-4">
-      <Navbar></Navbar>
-      <DescriptionSection></DescriptionSection>
-      <DynamicSurveySection></DynamicSurveySection>
-      <EndSection></EndSection>
-    </div>
+    <SurveyProvider>
+      <div className="relative z-50 flex flex-col px-4">
+        <Navbar />
+        <DescriptionSection />
+        <DynamicSurveySection />
+        <EndSection />
+      </div>
+    </SurveyProvider>
   );
 }

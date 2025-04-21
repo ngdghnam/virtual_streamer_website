@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Virtual Streamer Form",
+  title: "Khảo sát về Virtual Streamer",
   description: "Created by Virtual Streamer research team under BAAI-Lab",
 };
 
@@ -49,7 +49,7 @@ export default function RootLayout({
         {children}
         <Blob
           className="absolute"
-          style={{ bottom: "1600px", left: "12px" }}
+          style={{ bottom: "1600px", left: "8px" }}
         ></Blob>
         <Blob
           className="absolute"

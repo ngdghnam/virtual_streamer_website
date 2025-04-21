@@ -22,6 +22,7 @@ import { addSheetData } from "@/lib/google-sheet.action";
 const formSchema = z.object({
   phoneNumber: z
     .string()
+    .min(5, { message: "Phone number must be at least 5 digits" })
     .max(10, { message: "Phone number must be 10 digits" })
     .regex(/^[0-9+\-\s()]+$/, { message: "Please enter a valid phone number" }),
 });
