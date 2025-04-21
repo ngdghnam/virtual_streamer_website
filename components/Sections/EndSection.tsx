@@ -53,6 +53,11 @@ const EndSection: React.FC = () => {
             </p>
           </li>
         </ul>
+        <p>
+          <b>Lưu ý:</b> Mỗi sđt được tham gia 1 lần. Mọi thông tin được cung cấp
+          sẽ được giữ bí mật và chỉ sử dụng cho mục đích nghiên cứu học thuật.
+          Rất mong nhận được sự tham gia của bạn!
+        </p>
       </div>
       <div className="mt-4 font-medium text-2xl flex flex-col">
         <p className="text-xl font-normal">
