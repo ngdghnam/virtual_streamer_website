@@ -34,15 +34,9 @@ const PreliminaryStep: React.FC<PreliminaryStepProps> = ({
 
   // Combine all relevant questions
   const allQuestions = [
-    ...(questionsByType["likert"] || []).filter(
-      (q) => q.group === "preliminary"
-    ),
-    ...(questionsByType["multiple select question"] || []).filter(
-      (q) => q.group === "extra_preliminary"
-    ),
-    ...(questionsByType["single-choice"] || []).filter(
-      (q) => q.group === "extra_preliminary"
-    ),
+    ...(questionsByType["likert"] || []),
+    ...(questionsByType["multiple select question"] || []),
+    ...(questionsByType["single-choice"] || []),
   ];
 
   // Check if all questions are answered
