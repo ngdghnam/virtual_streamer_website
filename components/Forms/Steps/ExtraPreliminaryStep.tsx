@@ -23,9 +23,13 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
     return null;
   }
 
-  const isAllQuestionsAnswered = extraPreliminaryQuestions.every(
-    (q) => responses[q.question_id] && responses[q.question_id].trim() !== ""
+
+  // Check if all questions are answered
+  const allAnswered = extraPreliminaryQuestions.every(
+    (q) => responses[q.question_id]?.trim() !== ""
   );
+
+  
 
   return (
     <SurveySection title="Extra Preliminary">
@@ -39,7 +43,7 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
             value={responses[q.question_id] || ""}
             className="mt-2 space-y-2"
           >
-            {["Yes", "No"].map((option) => {
+            {["yes", "no"].map((option) => {
               const id = `${q.question_id}-${option}`;
               return (
                 <div
@@ -51,7 +55,7 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
                     id={id}
                     className="border-gray-300 hover:border-gray-400 focus:ring-2 focus:ring-blue-500"
                   />
-                  <Label htmlFor={id} className="cursor-pointer">
+                  <Label htmlFor={id} className="cursor-pointer capitalize">
                     {option}
                   </Label>
                 </div>
@@ -61,17 +65,19 @@ const ExtraPreliminaryStep: React.FC<ExtraPreliminaryStepProps> = ({
         </div>
       ))}
 
-      {isAllQuestionsAnswered && onNextStep && (
-        <div className="mt-6">
-          <Button
-            type="button"
-            onClick={onNextStep}
-            className="w-full py-6 text-lg font-medium"
-          >
-            Next
-          </Button>
-        </div>
-      )}
+      {onNextStep && (
+            <div className="pt-4">
+              <Button
+                type="button"
+                onClick={onNextStep}
+                disabled={!allAnswered}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+
+            
     </SurveySection>
   );
 };

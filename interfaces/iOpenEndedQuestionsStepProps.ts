@@ -7,4 +7,5 @@ export interface OpenEndedQuestionStepProps {
   currentOpenEndedIndex: number;
   setCurrentOpenEndedIndex: React.Dispatch<React.SetStateAction<number>>;
   handleNextOpenEndedQuestion: () => void;
+  onSurveySubmit: () => void
 }

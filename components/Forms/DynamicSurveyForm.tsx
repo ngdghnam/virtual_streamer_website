@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { SurveyQuestion, SurveySession } from "@/types/survey";
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { useSurveySession } from "@/hooks/useSurveySession";
+import { AlertCircle, CheckCircle } from "lucide-react";
 
 import DemographicStep from "./Steps/DemographicStep";
 import PreliminaryStep from "./Steps/PreliminaryStep";
@@ -13,24 +11,21 @@ import ExtraPreliminaryStep from "./Steps/ExtraPreliminaryStep";
 import BranchDetailsStep from "./Steps/BranchDetailsStep";
 import OpenEndedQuestionStep from "./Steps/OpenEndedQuestionStep";
 
+import { SurveyQuestion, SurveySession } from "@/types/survey";
+
 function DynamicSurveyForm() {
   const { session, questions, updateSession, isLoading, error } =
     useSurveySession();
 
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [currentOpenEndedIndex, setCurrentOpenEndedIndex] = useState(0);
   const [localSession, setLocalSession] = useState<SurveySession | null>(null);
 
-  // Đồng bộ session từ hook vào local state
   useEffect(() => {
-    if (session) {
-      setLocalSession(session);
-    }
+    if (session) setLocalSession(session);
   }, [session]);
 
-  // Cập nhật responses khi chọn đáp án
   const handleResponseChange = (questionId: string, value: string) => {
     if (!localSession) return;
 
@@ -47,11 +42,10 @@ function DynamicSurveyForm() {
   };
 
   const handleNextStep = async () => {
-    setSubmitError(null); // reset error nếu có
+    setSubmitError(null);
 
     try {
       const updated = await updateSession();
-
       setLocalSession(updated);
     } catch (err) {
       console.error("Failed to advance step:", err);
@@ -59,23 +53,6 @@ function DynamicSurveyForm() {
     }
   };
 
-  // Gửi kết quả khi submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      await updateSession();
-
-      setSubmitted(true);
-    } catch (err) {
-      console.error("Submit error:", err);
-      setSubmitError("Failed to submit survey. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const organizeQuestionsByType = (questions: SurveyQuestion[] | null) => {
     if (!questions) return {};
@@ -88,13 +65,6 @@ function DynamicSurveyForm() {
   };
 
   const questionsByType = organizeQuestionsByType(questions);
-
-  const handleNextOpenEndedQuestion = () => {
-    const openEndedQuestions = questionsByType["open-ended"] || [];
-    if (currentOpenEndedIndex < openEndedQuestions.length - 1) {
-      setCurrentOpenEndedIndex(currentOpenEndedIndex + 1);
-    }
-  };
 
   if (isLoading || !localSession)
     return <div className="text-center py-8">Loading survey...</div>;
@@ -113,9 +83,12 @@ function DynamicSurveyForm() {
             <CheckCircle className="w-16 h-16 text-green-500" />
             <CardTitle className="text-2xl">Thank You!</CardTitle>
             <p className="text-gray-600">Your responses have been submitted.</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 border rounded-md hover:bg-gray-100"
+            >
               Start New Survey
-            </Button>
+            </button>
           </div>
         </Card>
       </div>
@@ -124,7 +97,7 @@ function DynamicSurveyForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form className="space-y-8">
         <DemographicStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
@@ -143,12 +116,14 @@ function DynamicSurveyForm() {
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
         />
 
         <BranchDetailsStep
           questionsByType={questionsByType}
           responses={localSession.responses || {}}
           handleResponseChange={handleResponseChange}
+          onNextStep={handleNextStep}
         />
 
         <OpenEndedQuestionStep
@@ -157,8 +132,11 @@ function DynamicSurveyForm() {
           handleResponseChange={handleResponseChange}
           currentOpenEndedIndex={currentOpenEndedIndex}
           setCurrentOpenEndedIndex={setCurrentOpenEndedIndex}
-          handleNextOpenEndedQuestion={handleNextOpenEndedQuestion}
-        />
+          onSurveySubmit={() => setSubmitted(true)} 
+          handleNextOpenEndedQuestion={function (): void {
+            throw new Error("Function not implemented.");
+          } }        />
+
 
         {submitError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center">
@@ -166,21 +144,6 @@ function DynamicSurveyForm() {
             <span>{submitError}</span>
           </div>
         )}
-
-        <Button
-          type="submit"
-          className="w-full py-6 text-lg font-medium mt-8"
-          disabled={submitting}
-        >
-          {submitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting...
-            </>
-          ) : (
-            "Submit Survey"
-          )}
-        </Button>
       </form>
     </div>
   );
