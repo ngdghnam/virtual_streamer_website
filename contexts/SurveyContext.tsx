@@ -1,16 +1,9 @@
 "use client";
-import { createContext, useState, useContext, ReactNode } from "react";
-
-interface SurveyContextType {
-  isSurveyCompleted: boolean;
-  setIsSurveyCompleted: (completed: boolean) => void;
-}
+import { createContext, useState, useContext } from "react";
+import { SurveyContextType } from "@/types/SurveyContextType";
+import { SurveyProviderProps } from "@/interfaces/iSurveyProviderProps";
 
 const SurveyContext = createContext<SurveyContextType | undefined>(undefined);
-
-interface SurveyProviderProps {
-  children: ReactNode;
-}
 
 export function SurveyProvider({ children }: SurveyProviderProps) {
   const [isSurveyCompleted, setIsSurveyCompleted] = useState<boolean>(false);
