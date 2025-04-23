@@ -5,10 +5,10 @@ import Header from "../Header";
 const DescriptionSection = () => {
   return (
     <div className="mt-6 p-4 bg-white shadow-lg rounded-lg mx-1">
-      <h1 className="text-xl font-bold mb-1">Giới thiệu</h1>
       <Header></Header>
-      <div className="mt-1">
-        <p className="text-2xl font-bold">
+      <div className="my-1">
+        <h1 className="text-xl font-bold mb-1">Giới thiệu</h1>
+        <p className="text-xl font-bold">
           “Thần tượng ảo – hay còn gọi được là virtual idol – là những nhân vật
           không phải người thật, nhưng lại có thể ca hát, nhảy múa, quảng bá sản
           phẩm hoặc xuất hiện trên mạng xã hội như một người nổi tiếng.”
