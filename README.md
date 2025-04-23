@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Assessing the Perceived Information From a Multi-Modal Representation of Your Idol: An AI-Agent Dynamic Survey
 
-## Getting Started
+**[ENGLISH BELOW!]**
 
-First, run the development server:
+## Việt Nam
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Tổng quan
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Dự án được thực hiện nhằm thu thập dữ liệu và phân tích mức độ chấp nhận của Gen Z đối với hai loại idol ảo:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Celeb Virtual Avatar (CVA)** – thần tượng ảo dựa trên hình mẫu người thật
+2. **Fully Virtual Idol (FVI)** – thần tượng ảo hoàn toàn không có bản thể ngoài đời.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+So sánh các biến tâm lý liên quan: **Interpersonal Attractiveness**, **Trust**, **Attitude**, và **Behavioral Intention**.
 
-## Learn More
+### Ngôn ngữ sử dụng
 
-To learn more about Next.js, take a look at the following resources:
+Typescirpt
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Framework sử dụng
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Next.js
 
-## Deploy on Vercel
+### Link website:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Link Chính](https://virtualstreamer.leminhnguyen.com/)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Link dự phòng](https://virtual-streamer-form.vercel.app/)
+
+## English
+
+### Tổng quan
+
+The project was carried out to collect data and analyze Gen Z's acceptance of two types of virtual idols:
+
+1. **Celeb Virtual Avatar (CVA)** – a virtual idol modeled after a real-life individual.
+2. **Fully Virtual Idol (FVI)** – a completely virtual idol with no real-life counterpart.
+
+The study compares related psychological variables: **Interpersonal Attractiveness**, **Trust**, **Attitude**, and **Behavioral Intention**.
+
+### Programming Language
+
+Typescirpt
+
+### Framework
+
+Next.js
+
+### Link website:
+
+- [Main Link](https://virtualstreamer.leminhnguyen.com/)
+
+- [Backup Link](https://virtual-streamer-form.vercel.app/)

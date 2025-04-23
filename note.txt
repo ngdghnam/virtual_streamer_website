@@ -1,7 +1,0 @@
-Chia nhỏ component ra để
-if else để load lên từng component của cái step 
-Riêng open-ended load từng câu 
-
-ngày 21 
-thêm điều kiện ở demographic --> group 
-Thiếu single-choice ở preliminary 
